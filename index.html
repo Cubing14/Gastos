@@ -422,7 +422,7 @@
 
     <!-- COMPARTIR -->
     <div class="page" id="page-compartir">
-      <div class="page-header"><h1>Exportar resumen</h1><p>Descarga el PDF o compártelo donde quieras</p></div>
+      <div class="page-header"><h1>Exportar mes</h1><p>Genera el PDF de tus gastos y compártelo</p></div>
 
       <div class="card">
         <div class="card-title">Selecciona el mes</div>
@@ -431,33 +431,14 @@
         </div>
       </div>
 
-      <!-- Vista previa del PDF -->
       <div class="card">
         <div class="card-title">Vista previa</div>
-        <div id="comp-preview-pdf" style="
-          background:#fff;
-          border-radius:10px;
-          overflow:hidden;
-          box-shadow:0 4px 24px rgba(0,0,0,0.3);
-        "></div>
+        <div id="comp-preview-pdf" style="background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.3)"></div>
       </div>
 
-      <!-- Botones de acción -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-        <button class="btn btn-primary btn-full" style="padding:14px;font-size:15px" onclick="descargarPDF()">
-          📄 Descargar PDF
-        </button>
-        <button class="btn btn-ghost btn-full" style="padding:14px" onclick="compartirNativo()" id="btn-share-native">
-          📤 Compartir
-        </button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <button class="btn btn-ghost btn-full" style="background:#25D366;color:#fff;border-color:#25D366" onclick="compartirWhatsApp()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          WhatsApp
-        </button>
-        <button class="btn btn-ghost btn-full" onclick="copiarTexto()">📋 Copiar texto</button>
-      </div>
+      <button class="btn btn-primary btn-full" style="padding:16px;font-size:16px" onclick="compartirPDF()">
+        📤 Compartir PDF
+      </button>
     </div>
 
   </main>
@@ -958,213 +939,139 @@ function generarHTMLResumen(mes) {
   gastosMes.forEach(g => { porCat[g.cat] = (porCat[g.cat] || 0) + g.monto; });
   const sorted = Object.entries(porCat).sort((a, b) => b[1] - a[1]);
 
-  const pctPres  = limite ? Math.min(100, (total / limite * 100)) : 0;
+  const pctPres   = limite ? Math.min(100, total / limite * 100) : 0;
   const colorPres = pctPres >= 100 ? '#ef4444' : pctPres >= 80 ? '#f59e0b' : '#10b981';
 
   const catBars = sorted.map(([c, v]) => {
     const info = CATS[c] || CATS.otros;
     const pct  = total ? (v / total * 100) : 0;
-    return `
-      <div style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-          <span style="font-size:13px;font-weight:500;color:#374151">${info.icon} ${info.label}</span>
-          <span style="font-size:13px;font-weight:700;color:#111827">${fmt(v)} <span style="color:#9ca3af;font-weight:400">(${pct.toFixed(0)}%)</span></span>
-        </div>
-        <div style="background:#f3f4f6;border-radius:99px;height:8px;overflow:hidden">
-          <div style="width:${pct}%;height:100%;background:${info.color};border-radius:99px"></div>
-        </div>
-      </div>`;
+    return `<div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:13px;font-weight:500;color:#374151">${info.icon} ${info.label}</span>
+        <span style="font-size:13px;font-weight:700;color:#111827">${fmt(v)} <span style="color:#9ca3af;font-weight:400">(${pct.toFixed(0)}%)</span></span>
+      </div>
+      <div style="background:#f3f4f6;border-radius:99px;height:8px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${info.color};border-radius:99px"></div>
+      </div>
+    </div>`;
   }).join('');
 
   const filas = gastosMes.map(g => {
     const c = CATS[g.cat] || CATS.otros;
-    const [y, mo, d] = g.fecha.split('-');
+    const [, mo, d] = g.fecha.split('-');
     return `<tr>
-      <td style="padding:9px 12px;border-bottom:1px solid #f3f4f6;color:#6b7280;font-size:12px;white-space:nowrap">${d}/${mo}/${y}</td>
-      <td style="padding:9px 12px;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:500;color:#111827">${g.descripcion}</td>
-      <td style="padding:9px 12px;border-bottom:1px solid #f3f4f6">
-        <span style="background:${info.color}22;color:${c.color};padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">${c.icon} ${c.label}</span>
+      <td style="padding:8px 10px;border-bottom:1px solid #f3f4f6;color:#6b7280;font-size:12px;white-space:nowrap">${d}/${mo}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #f3f4f6;font-size:13px;color:#111827">${g.descripcion}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #f3f4f6">
+        <span style="background:${c.color}22;color:${c.color};padding:2px 7px;border-radius:99px;font-size:11px;font-weight:600">${c.icon} ${c.label}</span>
       </td>
-      <td style="padding:9px 12px;border-bottom:1px solid #f3f4f6;font-weight:700;font-size:13px;color:#111827;text-align:right;white-space:nowrap">${fmt(g.monto)}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #f3f4f6;font-weight:700;font-size:13px;text-align:right;white-space:nowrap">${fmt(g.monto)}</td>
     </tr>`;
   }).join('');
 
-  const presupuestoBloque = limite ? `
-    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:24px">
-      <div style="font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;font-weight:600;margin-bottom:12px">Presupuesto mensual</div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+  const presBloque = limite ? `
+    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin-bottom:24px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;font-weight:600;margin-bottom:10px">Presupuesto mensual</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap;gap:6px">
         <div>
-          <div style="font-size:28px;font-weight:800;color:${colorPres};font-family:sans-serif">${fmt(total)}</div>
-          <div style="font-size:13px;color:#9ca3af;margin-top:2px">de ${fmt(limite)} presupuestados</div>
+          <div style="font-size:26px;font-weight:800;color:${colorPres}">${fmt(total)}</div>
+          <div style="font-size:12px;color:#9ca3af;margin-top:2px">de ${fmt(limite)} presupuestados</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:22px;font-weight:700;color:${colorPres}">${pctPres.toFixed(0)}%</div>
-          <div style="font-size:12px;color:#9ca3af">${pctPres >= 100 ? 'Límite superado' : 'Restante: ' + fmt(limite - total)}</div>
+          <div style="font-size:20px;font-weight:700;color:${colorPres}">${pctPres.toFixed(0)}%</div>
+          <div style="font-size:11px;color:#9ca3af">${pctPres>=100 ? 'Límite superado' : 'Restante: '+fmt(limite-total)}</div>
         </div>
       </div>
-      <div style="background:#e5e7eb;border-radius:99px;height:10px;overflow:hidden">
+      <div style="background:#e5e7eb;border-radius:99px;height:9px;overflow:hidden">
         <div style="width:${pctPres}%;height:100%;background:${colorPres};border-radius:99px"></div>
       </div>
     </div>` : '';
 
-  return `
-    <div style="font-family:'Inter',Arial,sans-serif;color:#111827;padding:32px;max-width:720px;margin:0 auto">
-
-      <!-- Encabezado -->
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid #6c63ff">
-        <div>
-          <div style="font-size:22px;font-weight:800;color:#6c63ff;margin-bottom:4px">💰 Mis Finanzas</div>
-          <div style="font-size:28px;font-weight:700;color:#111827">Resumen de ${mesLabel(mes)}</div>
-          <div style="font-size:13px;color:#9ca3af;margin-top:4px">Generado el ${new Date().toLocaleDateString('es-CO', {day:'2-digit',month:'long',year:'numeric'})}</div>
-        </div>
-        <div style="background:linear-gradient(135deg,#6c63ff,#a78bfa);border-radius:14px;padding:16px 20px;text-align:center;color:#fff">
-          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.8">Total</div>
-          <div style="font-size:24px;font-weight:800;margin-top:2px">${fmt(total)}</div>
-          <div style="font-size:11px;opacity:.8;margin-top:2px">${gastosMes.length} transacciones</div>
-        </div>
-      </div>
-
-      ${presupuestoBloque}
-
-      <!-- Por categoría -->
-      ${sorted.length ? `
-      <div style="margin-bottom:28px">
-        <div style="font-size:14px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px">Por categoría</div>
-        ${catBars}
-      </div>` : ''}
-
-      <!-- Tabla de gastos -->
-      ${gastosMes.length ? `
+  return `<div style="font-family:Arial,sans-serif;color:#111827;padding:28px;max-width:700px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:18px;border-bottom:2px solid #6c63ff;flex-wrap:wrap;gap:12px">
       <div>
-        <div style="font-size:14px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Detalle de gastos</div>
-        <table style="width:100%;border-collapse:collapse">
-          <thead>
-            <tr style="background:#f9fafb">
-              <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em">Fecha</th>
-              <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em">Descripción</th>
-              <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em">Categoría</th>
-              <th style="padding:9px 12px;text-align:right;font-size:11px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em">Monto</th>
-            </tr>
-          </thead>
-          <tbody>${filas}</tbody>
-          <tfoot>
-            <tr style="background:#f9fafb">
-              <td colspan="3" style="padding:11px 12px;font-weight:700;font-size:13px;color:#374151">Total</td>
-              <td style="padding:11px 12px;font-weight:800;font-size:14px;color:#6c63ff;text-align:right">${fmt(total)}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>` : '<div style="text-align:center;padding:32px;color:#9ca3af">Sin gastos registrados este mes.</div>'}
-
-      <!-- Pie -->
-      <div style="margin-top:32px;padding-top:16px;border-top:1px solid #e5e7eb;font-size:11px;color:#d1d5db;text-align:center">
-        Generado desde Mis Finanzas
+        <div style="font-size:18px;font-weight:800;color:#6c63ff;margin-bottom:3px">💰 Mis Finanzas</div>
+        <div style="font-size:24px;font-weight:700;color:#111827">Resumen de ${mesLabel(mes)}</div>
+        <div style="font-size:12px;color:#9ca3af;margin-top:3px">${new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'})}</div>
       </div>
-    </div>`;
-}
-
-function generarTextoPlano(mes) {
-  const gastosMes = CACHE.gastos.filter(g => g.fecha.startsWith(mes));
-  const total     = gastosMes.reduce((s, g) => s + g.monto, 0);
-  const limite    = CACHE.presupuesto;
-
-  const porCat = {};
-  gastosMes.forEach(g => { porCat[g.cat] = (porCat[g.cat] || 0) + g.monto; });
-  const sorted = Object.entries(porCat).sort((a, b) => b[1] - a[1]);
-
-  let txt = `💰 *Resumen de gastos — ${mesLabel(mes)}*\n${'─'.repeat(28)}\n\n`;
-  if (sorted.length) {
-    txt += `📂 *Por categoría:*\n`;
-    sorted.forEach(([c, v]) => {
-      const info = CATS[c] || CATS.otros;
-      const pct  = total ? (v / total * 100).toFixed(0) : 0;
-      txt += `  ${info.icon} ${info.label}: ${fmt(v)} (${pct}%)\n`;
-    });
-    txt += '\n';
-  }
-  txt += `📊 *Total gastado:* ${fmt(total)}\n`;
-  if (limite) {
-    const restante = limite - total;
-    txt += `🎯 *Presupuesto:* ${fmt(limite)}\n`;
-    txt += restante >= 0
-      ? `✅ *Disponible:* ${fmt(restante)}\n`
-      : `⚠️ *Excedido en:* ${fmt(Math.abs(restante))}\n`;
-  }
-  txt += `\n📝 *Transacciones:* ${gastosMes.length}`;
-  if (gastosMes.length) {
-    txt += `\n\n🗒️ *Detalle:*\n`;
-    gastosMes.slice(0, 10).forEach(g => {
-      const [, mo, d] = g.fecha.split('-');
-      txt += `  • ${d}/${mo} ${g.descripcion}: ${fmt(g.monto)}\n`;
-    });
-    if (gastosMes.length > 10) txt += `  ... y ${gastosMes.length - 10} más\n`;
-  }
-  return txt;
+      <div style="background:linear-gradient(135deg,#6c63ff,#a78bfa);border-radius:12px;padding:14px 18px;text-align:center;color:#fff">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.8">Total gastado</div>
+        <div style="font-size:22px;font-weight:800;margin-top:2px">${fmt(total)}</div>
+        <div style="font-size:10px;opacity:.8;margin-top:1px">${gastosMes.length} transacciones</div>
+      </div>
+    </div>
+    ${presBloque}
+    ${sorted.length ? `<div style="margin-bottom:24px">
+      <div style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Por categoría</div>
+      ${catBars}
+    </div>` : ''}
+    ${gastosMes.length ? `<div>
+      <div style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Detalle de gastos</div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:#f9fafb">
+          <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase">Fecha</th>
+          <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase">Descripción</th>
+          <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase">Categoría</th>
+          <th style="padding:8px 10px;text-align:right;font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase">Monto</th>
+        </tr></thead>
+        <tbody>${filas}</tbody>
+        <tfoot><tr style="background:#f9fafb">
+          <td colspan="3" style="padding:10px;font-weight:700;font-size:13px;color:#374151">Total</td>
+          <td style="padding:10px;font-weight:800;font-size:14px;color:#6c63ff;text-align:right">${fmt(total)}</td>
+        </tr></tfoot>
+      </table>
+    </div>` : '<div style="text-align:center;padding:28px;color:#9ca3af;font-size:13px">Sin gastos registrados este mes.</div>'}
+    <div style="margin-top:28px;padding-top:14px;border-top:1px solid #e5e7eb;font-size:10px;color:#d1d5db;text-align:center">Generado desde Mis Finanzas</div>
+  </div>`;
 }
 
 function previsualizarResumen() {
   const sel = document.getElementById('comp-mes');
   if (!sel) return;
   const mes = sel.value || mesActual();
-  const html = generarHTMLResumen(mes);
-  const pre  = document.getElementById('comp-preview-pdf');
-  if (pre) pre.innerHTML = html;
+  const pre = document.getElementById('comp-preview-pdf');
+  if (pre) pre.innerHTML = generarHTMLResumen(mes);
 }
 
-function descargarPDF() {
+async function compartirPDF() {
   const sel = document.getElementById('comp-mes');
   const mes = sel ? sel.value : mesActual();
   const html = generarHTMLResumen(mes);
 
+  // Abre ventana con el PDF listo para imprimir/compartir
   const ventana = window.open('', '_blank');
   ventana.document.write(`<!DOCTYPE html><html><head>
     <meta charset="UTF-8">
-    <title>Resumen ${mesLabel(mes)} — Mis Finanzas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Gastos ${mesLabel(mes)} — Mis Finanzas</title>
     <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { background: #fff; font-family: 'Inter', Arial, sans-serif; }
-      @media print {
-        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        @page { margin: 0; size: A4; }
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{background:#fff;font-family:Arial,sans-serif}
+      @media print{
+        body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        @page{margin:10mm;size:A4}
+        .no-print{display:none}
+      }
+      .toolbar{
+        position:sticky;top:0;background:#6c63ff;padding:12px 20px;
+        display:flex;align-items:center;justify-content:space-between;gap:12px;
+        box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:10;
+      }
+      .toolbar span{color:#fff;font-size:14px;font-weight:600;font-family:Arial}
+      .toolbar button{
+        background:#fff;color:#6c63ff;border:none;border-radius:8px;
+        padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;
+        font-family:Arial;
       }
     </style>
-  </head><body>${html}</body></html>`);
+  </head><body>
+    <div class="toolbar no-print">
+      <span>💰 Mis Finanzas — ${mesLabel(mes)}</span>
+      <button onclick="window.print()">📄 Guardar / Imprimir PDF</button>
+    </div>
+    ${html}
+  </body></html>`);
   ventana.document.close();
-  ventana.onload = () => {
-    setTimeout(() => { ventana.print(); }, 300);
-  };
 }
-
-function compartirWhatsApp() {
-  const sel = document.getElementById('comp-mes');
-  const mes = sel ? sel.value : mesActual();
-  const txt = generarTextoPlano(mes);
-  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
-}
-
-async function compartirNativo() {
-  const sel = document.getElementById('comp-mes');
-  const mes = sel ? sel.value : mesActual();
-  const txt = generarTextoPlano(mes);
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: `Mis gastos — ${mesLabel(mes)}`, text: txt });
-    } catch(e) { /* cancelado */ }
-  } else {
-    toast('Este navegador no soporta compartir nativo', true);
-  }
-}
-
-function copiarTexto() {
-  const sel = document.getElementById('comp-mes');
-  const mes = sel ? sel.value : mesActual();
-  const txt = generarTextoPlano(mes);
-  navigator.clipboard.writeText(txt)
-    .then(() => toast('📋 Texto copiado'))
-    .catch(() => toast('⚠️ No se pudo copiar', true));
-}
-
 // ══════════════ CARGA INICIAL ══════════════
 async function cargarDatos() {
   document.getElementById('page-dashboard').innerHTML = `<div class="loading-bar"><div class="spinner"></div> Cargando tus datos...</div>`;
